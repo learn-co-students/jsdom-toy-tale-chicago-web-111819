@@ -18,7 +18,11 @@ document.addEventListener("DOMContentLoaded", ()=>{
     }
   })
 
-  toyForm.addEventListener("submit", createToy);
+  toyForm.addEventListener("submit", function(e){
+    e.preventDefault();
+    createToy();
+    e.target.reset();
+  });
 
 })
  
@@ -32,7 +36,12 @@ function getToys (){
 
 function displayToys(toys){
   for (const toy of toys){
-    const h2 = document.createElement('h2');
+    displayToy(toy)
+  }
+}
+
+function displayToy(toy){
+  const h2 = document.createElement('h2');
     const img = document.createElement('img');
     const p = document.createElement('p');
     const btn = document.createElement('button');
@@ -52,9 +61,7 @@ function displayToys(toys){
     btn.innerText = 'Like <3';
     div.appendChild(btn);
     collectionToys.appendChild(div);
-  }
 }
- 
 
 function createToy() {
   let fields = document.querySelectorAll('input');
@@ -72,11 +79,9 @@ function createToy() {
     body: JSON.stringify(data)
   };
 
-  fetch(TOYS_URL, reqConfig)
+  return fetch(TOYS_URL, reqConfig)
     .then(resp => resp.json())
-    .then(json => console.log(json))
+    .then(json => displayToy(json))
     .catch(error => console.error('oops, something is wrong', error.message))
 }
-
-
 
