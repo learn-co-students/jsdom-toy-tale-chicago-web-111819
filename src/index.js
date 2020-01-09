@@ -60,13 +60,25 @@ function displayToy(toy){
     div.appendChild(btn);
     collectionToys.appendChild(div);
 
+    let toyData = {
+      name: h2.innerText, 
+      image: img.src,
+      id: toy["id"]
+    };
+
     btn.addEventListener('click', function(e){
       let numStr = div.querySelector('p').innerText.split(" ")[0];
       let numInt = parseInt(numStr);
       numInt = numInt + 1;
       p.innerText = `${numInt} likes`
+
+      toyData["likes"] = numInt
+
+      updateToyLike(toyData);
     })
 }
+
+const TYPE = "application/json";
 
 function createToy() {
   let fields = document.querySelectorAll('input');
@@ -74,7 +86,6 @@ function createToy() {
   let image = fields[1].value;
   let data = { name, image };
 
-  const TYPE = "application/json";
   let reqConfig = {
     method: "POST",
     headers: {
@@ -88,4 +99,24 @@ function createToy() {
     .then(resp => resp.json())
     .then(json => displayToy(json))
     .catch(error => console.error('oops, something is wrong', error.message))
+}
+
+function updateToyLike(toyData) {
+  let likeConfig = {
+    method: "PATCH",
+    headers: {
+      "Content-Type": TYPE,
+      "Accept": TYPE
+    },
+    body: JSON.stringify(toyData)
+  };
+
+  let toyID = toyData["id"]
+  let realUrl = TOYS_URL + '/' + toyID
+  // let thisToyUrl = `http://localhost:3000/toys/${toyID}`
+
+  return fetch(realUrl, likeConfig)
+  .then(resp => resp.json())
+  .then(json => console.log(json))
+  .catch(error => console.error('oops, something is wrong in the likes', error.message))
 }
