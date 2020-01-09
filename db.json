@@ -10,7 +10,7 @@
       "id": 2,
       "name": "Buzz Lightyear",
       "image": "http://www.pngmart.com/files/6/Buzz-Lightyear-PNG-Transparent-Picture.png",
-      "likes": 8
+      "likes": 23
     },
     {
       "id": 3,
@@ -51,7 +51,26 @@
     {
       "name": "Just Another Toy",
       "image": "https://cjmart.jp/en/upload/save_image/0126_190824_mp4otl_y_2.jpg",
-      "id": 9
+      "id": 9,
+      "likes": 7
+    },
+    {
+      "name": "Senior Dut",
+      "image": "https://66.media.tumblr.com/89a2d526c62950fc44d9cbd3606957c4/tumblr_oupohbuK471v14rjio1_1280.jpg",
+      "id": 10,
+      "likes": 7
+    },
+    {
+      "name": "Mr F",
+      "image": "https://www.dpreview.com/files/p/articles/1587777038/Images/frontview.jpeg",
+      "id": 11,
+      "likes": 4
+    },
+    {
+      "name": "lordsawe",
+      "image": "https://66.media.tumblr.com/89a2d526c62950fc44d9cbd3606957c4/tumblr_oupohbuK471v14rjio1_1280.jpg",
+      "id": 12,
+      "likes": 7
     }
   ]
 }

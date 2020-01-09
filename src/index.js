@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
   const addBtn = document.querySelector('#new-toy-btn');
   const toyForm = document.querySelector('.container');
   const listToys = document.getElementById('toy-collection');
-
+  const btns = document.getElementsByClassName('like-btn')
   getToys();
 
   addBtn.addEventListener('click', () => {
@@ -18,11 +18,13 @@ document.addEventListener("DOMContentLoaded", ()=>{
     }
   })
 
-  toyForm.addEventListener("submit", createToy);
-
+  toyForm.addEventListener("submit", function(e){
+    e.preventDefault();
+    createToy();
+    e.target.reset();
+  });
 })
  
-
 function getToys (){
   fetch(TOYS_URL)
     .then(resp => resp.json())
@@ -32,7 +34,12 @@ function getToys (){
 
 function displayToys(toys){
   for (const toy of toys){
-    const h2 = document.createElement('h2');
+    displayToy(toy)
+  }
+}
+
+function displayToy(toy){
+  const h2 = document.createElement('h2');
     const img = document.createElement('img');
     const p = document.createElement('p');
     const btn = document.createElement('button');
@@ -52,9 +59,26 @@ function displayToys(toys){
     btn.innerText = 'Like <3';
     div.appendChild(btn);
     collectionToys.appendChild(div);
-  }
+
+    let toyData = {
+      name: h2.innerText, 
+      image: img.src,
+      id: toy["id"]
+    };
+
+    btn.addEventListener('click', function(e){
+      let numStr = div.querySelector('p').innerText.split(" ")[0];
+      let numInt = parseInt(numStr);
+      numInt = numInt + 1;
+      p.innerText = `${numInt} likes`
+
+      toyData["likes"] = numInt
+
+      updateToyLike(toyData);
+    })
 }
- 
+
+const TYPE = "application/json";
 
 function createToy() {
   let fields = document.querySelectorAll('input');
@@ -62,7 +86,6 @@ function createToy() {
   let image = fields[1].value;
   let data = { name, image };
 
-  const TYPE = "application/json";
   let reqConfig = {
     method: "POST",
     headers: {
@@ -72,11 +95,28 @@ function createToy() {
     body: JSON.stringify(data)
   };
 
-  fetch(TOYS_URL, reqConfig)
+  return fetch(TOYS_URL, reqConfig)
     .then(resp => resp.json())
-    .then(json => console.log(json))
+    .then(json => displayToy(json))
     .catch(error => console.error('oops, something is wrong', error.message))
 }
 
+function updateToyLike(toyData) {
+  let likeConfig = {
+    method: "PATCH",
+    headers: {
+      "Content-Type": TYPE,
+      "Accept": TYPE
+    },
+    body: JSON.stringify(toyData)
+  };
 
+  let toyID = toyData["id"]
+  let realUrl = TOYS_URL + '/' + toyID
+  // let thisToyUrl = `http://localhost:3000/toys/${toyID}`
 
+  return fetch(realUrl, likeConfig)
+  .then(resp => resp.json())
+  .then(json => console.log(json))
+  .catch(error => console.error('oops, something is wrong in the likes', error.message))
+}
