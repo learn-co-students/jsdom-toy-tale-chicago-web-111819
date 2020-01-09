@@ -1,9 +1,4 @@
 let addToy = false;
-const createH2 = document.createElement('h2')
-const createImg = document.createElement('img')
-const createP = document.createElement('p')
-const createBtn = document.createElement('button')
-const createDiv = document.createElement('div')
 
 document.addEventListener("DOMContentLoaded", ()=>{
   const addBtn = document.querySelector('#new-toy-btn');
@@ -28,13 +23,27 @@ document.addEventListener("DOMContentLoaded", ()=>{
 function getToys (){
   fetch("http://localhost:3000/toys")
     .then(resp => resp.json())
-    .then(json => console.log(json))
-    .catch(error => console.error('oops, something is wrong'))
+    .then(json => displayToys(json))
+    .catch(error => console.error('oops, something is wrong', error.message))
 }
 
-function displayToys(object){
-  for (const key in object){
+function displayToys(toys){
+  for (const toy of toys){
+    const h2 = document.createElement('h2');
+    const img = document.createElement('img');
+    const p = document.createElement('p');
+    // const btn = document.createElement('button');
+    const div = document.createElement('div');
+    const collectionToys = document.getElementById('toy-collection');
 
+    div.classList.add('card');
+    h2.innerText = toy['name'];
+    div.appendChild(h2);
+    img.src = toy['image'];
+    div.appendChild(img);
+    p.innerText = toy['likes'];
+    div.appendChild(p);
+    collectionToys.appendChild(div);
   }
 }
 
