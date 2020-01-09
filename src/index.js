@@ -32,7 +32,7 @@ function displayToys(toys){
     const h2 = document.createElement('h2');
     const img = document.createElement('img');
     const p = document.createElement('p');
-    // const btn = document.createElement('button');
+    const btn = document.createElement('button');
     const div = document.createElement('div');
     const collectionToys = document.getElementById('toy-collection');
 
@@ -40,9 +40,13 @@ function displayToys(toys){
     h2.innerText = toy['name'];
     div.appendChild(h2);
     img.src = toy['image'];
+    img.classList.add('toy-avatar');
     div.appendChild(img);
-    p.innerText = toy['likes'];
+    p.innerText = `${toy['likes']} likes`;
     div.appendChild(p);
+    btn.classList.add('like-btn');
+    btn.innerText = 'Like <3';
+    div.appendChild(btn);
     collectionToys.appendChild(div);
   }
 }
