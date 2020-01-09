@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
   const addBtn = document.querySelector('#new-toy-btn');
   const toyForm = document.querySelector('.container');
   const listToys = document.getElementById('toy-collection');
-
+  const btns = document.getElementsByClassName('like-btn')
   getToys();
 
   addBtn.addEventListener('click', () => {
@@ -23,10 +23,8 @@ document.addEventListener("DOMContentLoaded", ()=>{
     createToy();
     e.target.reset();
   });
-
 })
  
-
 function getToys (){
   fetch(TOYS_URL)
     .then(resp => resp.json())
@@ -61,6 +59,13 @@ function displayToy(toy){
     btn.innerText = 'Like <3';
     div.appendChild(btn);
     collectionToys.appendChild(div);
+
+    btn.addEventListener('click', function(e){
+      let numStr = div.querySelector('p').innerText.split(" ")[0];
+      let numInt = parseInt(numStr);
+      numInt = numInt + 1;
+      p.innerText = `${numInt} likes`
+    })
 }
 
 function createToy() {
@@ -84,4 +89,3 @@ function createToy() {
     .then(json => displayToy(json))
     .catch(error => console.error('oops, something is wrong', error.message))
 }
-
