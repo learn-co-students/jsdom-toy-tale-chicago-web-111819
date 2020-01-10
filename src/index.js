@@ -53,7 +53,7 @@ function buildToyElement(toy) {
   toyLiker.className = 'like-btn'
   toyLiker.addEventListener('click', function(event) {
     fetch(`http://localhost:3000/toys/${toyLiker.id}`, {
-      method: 'put',
+      method: 'patch',
       headers: {
         "Content-Type": "application/json",
         "Accept": "application/json"
