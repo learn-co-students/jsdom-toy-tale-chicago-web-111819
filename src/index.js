@@ -95,3 +95,5 @@ function renderToy(toy){
   toyDiv.appendChild(toyCard);
 }
 main();
+
+new
