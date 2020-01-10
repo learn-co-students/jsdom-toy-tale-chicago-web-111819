@@ -55,11 +55,10 @@ function buildToyElement(toy) {
     fetch(`http://localhost:3000/toys/${toyLiker.id}`, {
       method: 'put',
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Accept": "application/json"
       },
       body: JSON.stringify({
-        "name": toyName.innerText,
-        "image": toyIMG.src,
         "likes": toy.likes += 1
       })
     } )
