@@ -1,11 +1,53 @@
-let addToy = false;
-const TOYS_URL = "http://localhost:3000/toys";
 
-document.addEventListener("DOMContentLoaded", ()=>{
+/* === helpers === */
+function q(el) {
+  return document.querySelector(el);
+}
+
+function qA(el) {
+  return document.querySelectorAll(el);
+}
+
+/**
+ * 
+ * @param {*} message Informational message to print to STDOUT.
+ * @param {*} method The method from which this was called.
+ * @param {*} error Whether this is an error or just info.
+ * 
+ */
+function log(message, method = null, error = false) {
+  const type = error ? "Error" : "Info";
+  let msg = method ? `${type}[${method}()]` : `${type}`;
+  msg += `: ${message}`;
+  type ? console.log(msg) : console.error(msg);
+}
+/* === END helpers === */
+
+const CONF = {
+  DATA_TYPES: {
+    json: "application/json",
+    html: "text/html",
+    txt: "text/plain",
+    csv: "text/csv",
+    formdata: "multipart/form-data"
+  },
+  URLS: {
+    base: "http://localhost:3000",
+    toys: "http://localhost:3000/toys"
+  },
+  METHODS: {
+    get: "GET",
+    post: "POST",
+    patch: "PATCH",
+    put: "PUT",
+    delete: "DELETE"
+  }
+}
+
+let addToy = false;
+document.addEventListener("DOMContentLoaded", () => {
   const addBtn = document.querySelector('#new-toy-btn');
   const toyForm = document.querySelector('.container');
-  const listToys = document.getElementById('toy-collection');
-  const btns = document.getElementsByClassName('like-btn')
   getToys();
 
   addBtn.addEventListener('click', () => {
@@ -18,18 +60,18 @@ document.addEventListener("DOMContentLoaded", ()=>{
     }
   })
 
-  toyForm.addEventListener("submit", function(e){
+  toyForm.addEventListener("submit", e => {
     e.preventDefault();
     createToy();
     e.target.reset();
   });
 })
  
-function getToys (){
-  fetch(TOYS_URL)
+function getToys(){
+  fetch(CONF.URLS.toys)
     .then(resp => resp.json())
     .then(json => displayToys(json))
-    .catch(error => console.error('oops, something is wrong', error.message))
+    .catch(error => log(error.message, "getToys", true))
 }
 
 function displayToys(toys){
@@ -39,84 +81,92 @@ function displayToys(toys){
 }
 
 function displayToy(toy){
+  const listToys = q("#toy-collection");
+
   const h2 = document.createElement('h2');
-    const img = document.createElement('img');
-    const p = document.createElement('p');
-    const btn = document.createElement('button');
-    const div = document.createElement('div');
-    const collectionToys = document.getElementById('toy-collection');
+  const img = document.createElement('img');
+  const p = document.createElement('p');
+  const btn = document.createElement('button');
+  const div = document.createElement('div');
 
-    div.classList.add('card');
-    h2.innerText = toy['name'];
-    div.appendChild(h2);
-    img.src = toy['image'];
-    img.classList.add('toy-avatar');
-    div.appendChild(img);
-    let likes = toy['likes'] ? toy['likes'] : 0;
-    p.innerText = `${likes} likes`;
-    div.appendChild(p);
-    btn.classList.add('like-btn');
-    btn.innerText = 'Like <3';
-    div.appendChild(btn);
-    collectionToys.appendChild(div);
+  div.classList.add('card');
+  h2.innerText = toy['name'];
+  div.appendChild(h2);
+  img.src = toy['image'];
+  img.classList.add('toy-avatar');
+  div.appendChild(img);
+  let likes = toy['likes'] ? toy['likes'] : 0;
+  p.innerText = `${likes} likes`;
+  div.appendChild(p);
+  btn.classList.add('like-btn');
+  btn.innerText = 'Like <3';
+  div.appendChild(btn);
+  listToys.appendChild(div);
 
-    let toyData = {
-      name: h2.innerText, 
-      image: img.src,
-      id: toy["id"]
-    };
+  let toyData = {
+    name: h2.innerText, 
+    image: img.src,
+    id: toy["id"]
+  };
 
-    btn.addEventListener('click', function(e){
-      let numStr = div.querySelector('p').innerText.split(" ")[0];
-      let numInt = parseInt(numStr);
-      numInt = numInt + 1;
-      p.innerText = `${numInt} likes`
+  btn.addEventListener('click', e => {
+    e.preventDefault();
+    let numStr = div.querySelector('p').innerText.split(" ")[0];
+    let numInt = parseInt(numStr);
+    numInt = numInt + 1;
+    p.innerText = `${numInt} likes`
 
-      toyData["likes"] = numInt
+    toyData["likes"] = numInt
 
-      updateToyLike(toyData);
-    })
+    updateToyLike(toyData);
+  })
 }
 
-const TYPE = "application/json";
-
 function createToy() {
-  let fields = document.querySelectorAll('input');
+  let fields = qA('input');
   let name = fields[0].value;
   let image = fields[1].value;
   let data = { name, image };
 
   let reqConfig = {
-    method: "POST",
+    method: CONF.METHODS.post,
     headers: {
-      "Content-Type": TYPE,
-      "Accept": TYPE
+      "Content-Type": CONF.DATA_TYPES.json,
+      "Accept": CONF.DATA_TYPES.json
     },
     body: JSON.stringify(data)
   };
 
-  return fetch(TOYS_URL, reqConfig)
+  return fetch(CONF.URLS.toys, reqConfig)
     .then(resp => resp.json())
-    .then(json => displayToy(json))
-    .catch(error => console.error('oops, something is wrong', error.message))
+    .then(toy => {
+      displayToy(toy);
+      log("Toy successfully created with the following id: " + toy.id, "createToy");
+    })
+    .catch(error => log(error.message, "createToy", true))
 }
 
 function updateToyLike(toyData) {
   let likeConfig = {
-    method: "PATCH",
+    method: CONF.METHODS.patch,
     headers: {
-      "Content-Type": TYPE,
-      "Accept": TYPE
+      "Content-Type": CONF.DATA_TYPES.json,
+      "Accept": CONF.DATA_TYPES.json
     },
     body: JSON.stringify(toyData)
   };
 
-  let toyID = toyData["id"]
-  let realUrl = TOYS_URL + '/' + toyID
-  // let thisToyUrl = `http://localhost:3000/toys/${toyID}`
+  let toyUrl = `${CONF.URLS.toys}/${toyData["id"]}`
 
-  return fetch(realUrl, likeConfig)
-  .then(resp => resp.json())
-  .then(json => console.log(json))
-  .catch(error => console.error('oops, something is wrong in the likes', error.message))
+  fetch(toyUrl, likeConfig)
+    .then(resp => resp.json())
+    .then(toy => {
+      displayToy(toy);
+      log(`Toy with the following id '${toy.id}' successfully UPDATED.`, "updateToyLike");
+    })
+    .catch(error => log(error.message, "updateToyLike", true))
 }
+
+
+
+
