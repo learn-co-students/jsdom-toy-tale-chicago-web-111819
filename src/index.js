@@ -53,6 +53,7 @@ function addNewToyFormListener(){
 
 function likes(e) {
   e.preventDefault()
+  const Toy = document.querySelector('.like-btn');
   let more = parseInt(e.target.previousElementSibling.innerText) + 1
 
   fetch(`http://localhost:3000/toys/${e.target.id}`, {
@@ -113,6 +114,7 @@ function renderToy(toy){
   btn.innerText = 'Like ♡';
   toyCard.appendChild(btn);
   btn.addEventListener('click', (e) => {
+
     likes(e)
   })
   
