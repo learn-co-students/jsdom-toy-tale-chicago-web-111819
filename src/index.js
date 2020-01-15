@@ -13,7 +13,7 @@ function main(){
     })
 
     fetchToys();
-    newToy();
+    // newToy();
     addNewToyFormListener();
   })
 }
@@ -50,6 +50,28 @@ function addNewToyFormListener(){
 
   })
 }
+
+function likes(e) {
+  e.preventDefault()
+  let more = parseInt(e.target.previousElementSibling.innerText) + 1
+
+  fetch(`http://localhost:3000/toys/${e.target.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+
+      },
+      body: JSON.stringify({
+        "likes": more
+      })
+    })
+    .then(res => res.json())
+    .then((like_obj => {
+      e.target.previousElementSibling.innerText = `${more} likes`;
+    }))
+}
+
 
 
 
@@ -90,10 +112,12 @@ function renderToy(toy){
   btn.className = 'like-btn';
   btn.innerText = 'Like ♡';
   toyCard.appendChild(btn);
+  btn.addEventListener('click', (e) => {
+    likes(e)
+  })
+  
 
   
   toyDiv.appendChild(toyCard);
 }
 main();
-
-new
